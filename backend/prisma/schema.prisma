@@ -1,15 +1,195 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// Configuração do Prisma
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+// Modelo de usuário
+model User {
+  id                    String                @id @default(auto()) @map("_id") @db.ObjectId
+  email                 String                @unique
+  password              String
+  name                  String
+  age                   Int
+  postalCode            String
+  city                  String
+  state                 String
+  street                String
+  houseNumber           String
+  neighborhood          String
+  biography             String?
+  phone                 String
+  contactEmail          String
+  contactPhone          String
+  socialNetworks        String?
+  createdAt             DateTime              @default(now())
+  
+  // Relacionamentos
+  donations             Donation[]            @relation("DonorDonations")
+  candidacies           Candidacy[]
+  receivedDonations     Donation[]            @relation("ReceiverDonations")
+  profileEditHistory    ProfileEditHistory[]
+  revokedTokens         RevokedToken[]
+  passwordResetTokens   PasswordResetToken[]
+  
+  @@map("users")
+}
+
+// Histórico de edições do perfil do usuário
+model ProfileEditHistory {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  editedAt        DateTime @default(now())
+  changedFields   Json     // Armazena um objeto com os campos alterados e seus valores anteriores/novos
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("profile_edit_history")
+}
+
+// Modelo de doação
+model Donation {
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  sequentialId          Int                 @unique // ID sequencial para exibição
+  title                 String
+  description           String
+  createdAt             DateTime            @default(now())
+  status                DonationStatus      @default(OPEN)
+  pickupType            PickupType
+  postalCode            String
+  street                String
+  locationNumber        String
+  neighborhood          String
+  city                  String
+  state                 String
+  category              DonationCategory
+  returnReason          String?
+  
+  // ID do doador
+  donorId               String              @db.ObjectId
+  donor                 User                @relation("DonorDonations", fields: [donorId], references: [id], onDelete: Cascade)
+  
+  // ID do receptor aceito (quando status é IN_PROGRESS ou posterior)
+  receiverId            String?             @db.ObjectId
+  receiver              User?               @relation("ReceiverDonations", fields: [receiverId], references: [id])
+  
+  // Relacionamentos
+  candidacies           Candidacy[]
+  editHistory           DonationEditHistory[]
+  progress              DonationProgress?
+  
+  @@map("donations")
+}
+
+// Histórico de edições da doação
+model DonationEditHistory {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  donationId      String   @db.ObjectId
+  editedAt        DateTime @default(now())
+  changedFields   Json     // Armazena um objeto com os campos alterados
+  
+  donation        Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  
+  @@map("donation_edit_history")
+}
+
+// Candidaturas para receber doações
+model Candidacy {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  donationId      String   @db.ObjectId
+  userId          String   @db.ObjectId
+  createdAt       DateTime @default(now())
+  
+  donation        Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Um usuário só pode se candidatar uma vez por doação
+  @@unique([donationId, userId])
+  @@map("candidacies")
+}
+
+// Progresso da doação (checkboxes e devolução)
+model DonationProgress {
+  id                          String   @id @default(auto()) @map("_id") @db.ObjectId
+  donationId                  String   @unique @db.ObjectId
+  
+  // Confirmações de retirada
+  pickupConfirmedByDonor      Boolean  @default(false)
+  pickupConfirmedByReceiver   Boolean  @default(false)
+  
+  // Confirmações de conclusão
+  completionConfirmedByDonor    Boolean  @default(false)
+  completionConfirmedByReceiver Boolean  @default(false)
+  
+  // Devolução
+  returnSignaledByReceiver    Boolean  @default(false)
+  returnConfirmedByDonor      Boolean  @default(false)
+  returnConfirmedByReceiver   Boolean  @default(false)
+  
+  donation                    Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  
+  @@map("donation_progress")
+}
+
+// Tokens JWT revogados (para logout)
+model RevokedToken {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  token       String   @unique
+  userId      String   @db.ObjectId
+  revokedAt   DateTime @default(now())
+  expiresAt   DateTime // Data de expiração original do token
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("revoked_tokens")
+}
+
+// Tokens para recuperação de senha
+model PasswordResetToken {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  token       String   @unique
+  userId      String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("password_reset_tokens")
+}
+
+// Contador para IDs sequenciais das doações
+model Counter {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  value       Int      @default(0)
+  
+  @@map("counters")
+}
+
+// Enums
+enum DonationStatus {
+  OPEN        // Aberta para candidaturas
+  IN_PROGRESS // Receptor escolhido, em andamento
+  PICKED_UP   // Retirada confirmada
+  COMPLETED   // Concluída
+}
+
+enum PickupType {
+  PICK_UP_AT_LOCATION  // Retirar no local
+  ARRANGE_WITH_DONOR   // Combinar com o doador
+}
+
+enum DonationCategory {
+  FOOD          // Alimentos
+  APPLIANCES    // Eletrodomésticos
+  FURNITURE     // Móveis
+  CLOTHING      // Vestuário
+  ELECTRONICS   // Eletrônicos
+  EQUIPMENT     // Equipamentos
+  HOME          // Casa
 }

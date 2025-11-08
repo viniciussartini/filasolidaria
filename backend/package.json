@@ -23,6 +23,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.0",
     "@types/nodemailer": "^7.0.3",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.6.2",
@@ -39,6 +40,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^7.0.10"
+    "mongodb": "^7.0.0",
+    "nodemailer": "^7.0.10",
+    "zod": "^4.1.12"
   }
 }
