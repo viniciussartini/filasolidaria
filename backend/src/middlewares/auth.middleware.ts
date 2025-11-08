@@ -1,4 +1,4 @@
-import { NextFunction } from "express";
+import { NextFunction, Response } from "express";
 import { AuthenticatedRequest } from "../types/index.js";
 import { verifyToken } from "../config/jwt.js";
 import { AuthRepository } from "../modules/auth/auth.repository.js";
@@ -13,7 +13,7 @@ import { UnauthorizedError } from "../shared/errors/AppError.js";
  * @param req 
  * @param next 
  */
-export async function authenticate(req: AuthenticatedRequest, next: NextFunction): Promise<void> {
+export async function authenticate(req: AuthenticatedRequest, _res: Response, next: NextFunction): Promise<void> {
     try {
         const authHeader = req.headers.authorization;
 
@@ -64,7 +64,7 @@ export async function authenticate(req: AuthenticatedRequest, next: NextFunction
  * @param next 
  * @returns 
  */
-export async function optionalAuthenticate(req: AuthenticatedRequest, next: NextFunction): Promise<void> {
+export async function optionalAuthenticate(req: AuthenticatedRequest, _res: Response, next: NextFunction): Promise<void> {
     try {
         const authHeader = req.headers.authorization;
 
