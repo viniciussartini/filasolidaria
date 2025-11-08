@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { JwtPayload } from "../types/index.js";
-import { UnauthorizedError } from "../errors/AppError.js";
+import { UnauthorizedError } from "../shared/errors/AppError.js";
 
 export const JWT_CONFIG = {
     secret: process.env.JWT_SECRET || "default_secret_change_in_production",
