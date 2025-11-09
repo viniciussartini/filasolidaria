@@ -2,13 +2,14 @@
 
 ## Tecnologias
 
-- **Node.js** v18+ - Runtime JavaScript
-- **TypeScript** v5+ - Superset tipado do JavaScript
-- **Express** v4+ - Framework web minimalista
-- **MongoDB** - Banco de dados NoSQL
-- **Prisma** v5+ - ORM moderno e type-safe
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6.svg?style=for-the-badge&logo=TypeScript&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000.svg?style=for-the-badge&logo=Express&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748.svg?style=for-the-badge&logo=Prisma&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=MongoDB&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-408AFF.svg?style=for-the-badge&logo=Zod&logoColor=white)
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 O projeto segue uma **arquitetura em camadas** (Layered Architecture) que separa responsabilidades de forma clara:
 
@@ -625,7 +626,7 @@ classDiagram
 - `ValidationError (400)`: Dados inválidos na requisição
 - `InternalServerError (500)`: Erro inesperado no servidor
 
-## 🔄 Fluxos de Negócio
+## Fluxos de Negócio
 
 ### Fluxo Completo de uma Doação
 
@@ -857,9 +858,9 @@ flowchart TD
     NODE_ENV=development
 
     # MongoDB
-    DATABASE_URL="mongodb://localhost:27017/fila_solidaria"
+    DATABASE_URL="mongodb://localhost:27017/seubanco"
     # Ou use MongoDB Atlas:
-    # DATABASE_URL="mongodb+srv://usuario:senha@cluster.mongodb.net/fila_solidaria"
+    # DATABASE_URL="mongodb+srv://usuario:senha@cluster.mongodb.net/seubanco"
 
     # JWT
     JWT_SECRET=sua_chave_secreta_super_segura_aqui_mude_em_producao
@@ -1052,7 +1053,7 @@ filasolidaria/backend/
 └── README.md               # Este arquivo
 ```
 
-## 🧪 Testando a API
+## Testando a API
 
 ### Registro de Usuário
 
@@ -1124,7 +1125,7 @@ curl http://localhost:3333/api/donations?category=FOOD&city=São%20Paulo
 curl http://localhost:3333/api/donations?page=1&limit=20
 ```
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### Legenda
 
@@ -1824,7 +1825,7 @@ Doador ou receptor confirma a devolução.
 }
 ```
 
-## 🚨 Tratamento de Erros
+## Tratamento de Erros
 
 Todos os erros seguem o mesmo formato:
 
@@ -1856,9 +1857,3 @@ Este projeto está sob a licença MIT.
 ## Contribuindo
 
 Contribuições são bem-vindas! Por favor, abra uma issue primeiro para discutir mudanças maiores.
-
-## Suporte
-
-Se você encontrou um bug ou tem alguma sugestão, abra uma [issue no GitHub](https://github.com/seu-usuario/fila-solidaria-backend/issues).
-
-Desenvolvido com ❤️ para conectar pessoas através da solidariedade
